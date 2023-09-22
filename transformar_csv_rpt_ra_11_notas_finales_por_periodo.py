@@ -10,6 +10,9 @@ def renombrar_columna(df, columna_original, nuevo_nombre):
     return df.rename(columns={columna_original: nuevo_nombre})
 
 #agraegar nuevo columla al inicio 
+def agregar_columna_inicio(df, columna, valor):
+    df.insert(0, columna, valor)
+    return df
 
 
 # Definir función para procesar un archivo CSV
@@ -24,7 +27,11 @@ def procesar_archivo_RPT_11(archivo_entrada, archivo_salida):
 
     # Eliminar las columnas no deseadas
     df = eliminar_columnas(df, columnas_a_eliminar)
+    #valor de la columna textbox56
+    p = df['textbox56'].iloc[0]
 
+    # Agregar columna Tipo
+    df = agregar_columna_inicio(df, 'Periodo', p)
     # Renombrar columnas
     renombrar_dict = {
         'textbox32': 'Carrera',
@@ -42,7 +49,7 @@ def procesar_archivo_RPT_11(archivo_entrada, archivo_salida):
     #limpiar las columna 
     df.loc[df['textbox32'] == int, 'textbox32'] = None
     df.loc[df['textbox46'] == int, 'textbox46'] = None
-    #df.loc[df['textbox48'] == int, 'Nombre'] = None
+    df.loc[df['textbox48'] == int, 'Nombre'] = None
     df.loc[df['textbox50'] == str, 'textbox50'] = None
     df.loc[df['textbox52'] == str, 'textbox52'] = None
     df.loc[df['textbox54'] == 0, 'textbox54'] = None
