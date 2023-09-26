@@ -9,7 +9,6 @@ import openpyxl
 
 def eliminar_columna(df):
     return df.drop(columns=['Textbox73', 
-                            'Textbox78',
                             'Textbox79',
                             'Textbox74'], axis=1)
 
@@ -23,6 +22,7 @@ def renombrar_columnas(df):
                               'ENFASIS2':'ENFASIS',
                               'Textbox77':'TOTAL_ACUMULADO_CUATRIMESTRE',
                               'CLIPAI2':'NACIONALIDAD',
+                              'Textbox78': 'Religion',
                               'CARCOD2':'GENERO',
                               'CARCOD3':'EDAD',
                               'CLIEM2':'EMAIL',
@@ -48,7 +48,7 @@ def procesar_archivo_RPT_RM_03_Estudiantes(archivo_entrada, archivo_salida):
     df.loc[df['EDAD'] == str, 'EDAD'] = None
     df.loc[df['EMAIL'] == int, 'EMAIL'] = None
     df.loc[df['TELEFONO1'] == 0, 'TELEFONO1'] = None
-
+    df.loc[df['Religion'] == None, 'Religion'] = "N/a"
 
     # Crear un nuevo DataFrame con solo la columna 'Nota'
     df_nueva = pd.DataFrame(df)
