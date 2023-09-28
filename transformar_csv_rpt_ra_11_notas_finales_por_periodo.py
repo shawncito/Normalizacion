@@ -15,24 +15,48 @@ def agregar_columna_inicio(df, columna, valor):
     df.insert(0, columna, valor)
     return df
 
+def encontrar_perido(nombre_archivo, archivo_salida):
+        patron = r'(\d+)C ?(\d+)'
+
+        # Busca la primera coincidencia en el nombre del archivo
+        coincidencia = re.search(patron, nombre_archivo)
+
+        # Verificamos si se encontró una coincidencia
+        if coincidencia:
+            numero_despues_de_C = coincidencia.group(1)
+            numero_antes_de_C = coincidencia.group(2)
+            numero1 = numero_antes_de_C + "-" + numero_despues_de_C
+            print("Número:", numero1)
+            procesar_archivo_RPT_11(numero1, archivo_salida)
+            #procesar_archivo_RPT_11(numero1, archivo_salida,)
+            return numero1
+
+def encontrar_anio(nombre_archivo, archivo_salida):
+        patron_anio = r'(\d{4})[^0-9]'
+
+        # Busca el año en el nombre del archivo
+        patron_quinto_digito = r'(\d)(\d{4})'
+        # Busca el año en el nombre del archivo
+        coincidencia_anio = re.search(patron_anio, nombre_archivo)
+        # Busca el quinto dígito en el nombre del archivo
+        coincidencia_quinto_digito = re.search(patron_quinto_digito, nombre_archivo)
+        # Verifica si se encontraron coincidencias
+        if coincidencia_anio and coincidencia_quinto_digito:
+            anio = coincidencia_anio.group(1)
+            quinto_digito = coincidencia_quinto_digito.group(1)
+            numero2 = anio+'-'+quinto_digito
+            print("Número:", numero2)
+            procesar_archivo_RPT_11(numero2, archivo_salida)
+            return numero2
+
+
 
 # Definir función para procesar un archivo CSV
-def procesar_archivo_RPT_11(archivo_entrada, archivo_salida):
+def procesar_archivo_RPT_11(archivo_entrada, archivo_salida, numero):
     # Leer el archivo CSV en un DataFrame
     df = pd.read_csv(archivo_entrada)
 
-    # Obtener el número de período a partir del nombre del archivo
-    nombre_archivo = os.path.basename(archivo_entrada)
-
     # Utilizar una expresión regular para buscar números al final del nombre del archivo
-    numero_match = re.search(r'(\d+)[^\d]*$', nombre_archivo)
-    
-    if numero_match:
-        numero = numero_match.group(1)
-    else:
-        # Si no se encuentra un número, se puede asignar un valor predeterminado o manejarlo de otra manera
-        numero = 'N/A'  # O cualquier otro valor predeterminado que desees
-
     df['Periodo'] = numero
     
     # Columnas a eliminar
@@ -76,7 +100,7 @@ def procesar_archivo_RPT_11(archivo_entrada, archivo_salida):
     df.loc[df['GRPNTA'] == 0, 'GRPNTA'] = None
     #df.loc[df['GRPNTA'] == None, 'GRPNTA'] = "nada"
     
-    
+    #procesar(nombre_archivo)
 
     # Eliminar la columna existente "Periodo"
     df.drop(columns=['Periodo'], inplace=True)
