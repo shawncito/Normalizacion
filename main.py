@@ -5,20 +5,26 @@ from transformar_xlsx_rpt_rg_04_estudiantes_institucion import procesar_archivo_
 from transformar_xlsx_rpt_rg_05_estado_estudiantes import procesar_archivo_xlsx as procesar_archivo_RPT_RG_05
 from Limpiar_RPT_RG_01_Estudiantes import precesar_archivo_RPT_RG_01_estudiantes as precesar_archivo_RPT_RG_01_estudiantes
 from Limpiar_RPT_RM_03_EstudiantesNiveles import procesar_archivo_RPT_RM_03_Estudiantes as procesar_archivo_RPT_RM_03_Estudiantes
-
+from transformar_csv_rpt_ra_11_notas_finales_por_periodo import encontrar_perido, encontrar_anio
 
 
 # Directorio donde se encuentran los archivos CSV y XLSX
 directorio_entrada = "./data"
 
 # Patrón de nombre de archivo CSV y XLSX que deseas buscar
+patron_if = "RPT_RA_11_NOTAS_FINALES_POR_PERIODO * *C * * * * * * * *.csv"
+patron_elif = "RPT_RA_11_NOTAS_FINALES_POR_PERIODO_*.csv"
 patron_nombre_archivo_csv = "RPT_RA_11_NOTAS_FINALES_POR_PERIODO*.csv"
 patron_nombre_archivo_xlsx = "RPT_RG_04_EstudiantesInstitucion.xlsx"
 patron_nombre_archivo_xlsx_rg_05 = "RPT_RG_05_EstadoEstudiantes.xlsx"
 patron_nombre_archivo_csv_rg_01 = "RPT_RG_01_Estudiantes.csv"
 patron_nombre_archivo_csv_rm_03 = "RPT_RM_03_EstudiantesNiveles.csv"
 
+# Obtener la lista de archivos en el directorio que coinciden con el patrón if
+archivos_if = glob.glob(os.path.join(directorio_entrada, patron_if))
 
+# Obtener la lista de archivos en el directorio que coinciden con el patrón elif
+archivos_elif = glob.glob(os.path.join(directorio_entrada, patron_elif))
 # Utilizar glob para obtener la lista de archivos que coinciden con el patrón CSV
 archivos_csv = glob.glob(os.path.join(directorio_entrada, patron_nombre_archivo_csv))
 
@@ -34,16 +40,30 @@ archivo_csv_rg_01 = glob.glob(os.path.join(directorio_entrada, patron_nombre_arc
 # Utilizar glob para buscar el archivo CSV de RM_03
 archivo_csv_rm_03 = glob.glob(os.path.join(directorio_entrada, patron_nombre_archivo_csv_rm_03))
 
-def RPT_RA_11_NOTAS_FINALES_POR_PERIODO(archivos_csv):
-        
+def RPT_RA_11_NOTAS_FINALES_POR_PERIODO(archivos_csv, directorio_entrada):
+    
     # Procesar archivos CSV
-    for archivo_csv in archivos_csv:
+    '''for archivo_csv in archivos_csv:
         # Construir el nombre de archivo de salida
         nombre_archivo = os.path.basename(archivo_csv)
         archivo_salida = os.path.join("DATA_NORMALIZADA", nombre_archivo)
-
+        encontrar_perido(nombre_archivo, directorio_entrada)
         # Procesar el archivo CSV
         procesar_archivo_RPT_11(archivo_csv, archivo_salida)
+        print("Se ha procesado el archivo: " + archivo_csv)'''
+    
+    for archivo_csv in archivos_if:
+        nombre_archivo = os.path.basename(archivo_csv)
+        archivo_salida = os.path.join("DATA_NORMALIZADA", nombre_archivo)
+        encontrar_perido(nombre_archivo, archivo_salida)
+        procesar_archivo_RPT_11(archivo_csv, archivo_salida, numero1)
+        print("Se ha procesado el archivo: " + archivo_csv)
+
+    for archivo_csv in archivos_elif:
+        nombre_archivo = os.path.basename(archivo_csv)
+        archivo_salida = os.path.join("DATA_NORMALIZADA", nombre_archivo)
+        encontrar_anio(nombre_archivo, archivo_salida)
+        procesar_archivo_RPT_11(archivo_csv, archivo_salida, numero2)
         print("Se ha procesado el archivo: " + archivo_csv)
 
 def RPT_RG_04_EstudiantesInstitucion(archivo_xlsx):
@@ -77,6 +97,7 @@ def RPT_RG_01_Estudiantes(archivo_csv_rg_01):
         archivo_csv_rg_01 = archivo_csv_rg_01[0]  # Tomar el primer archivo CSV si hay varios
         # Construir el nombre de archivo de salida
         nombre_archivo = os.path.basename(archivo_csv_rg_01)
+        
         archivo_salida = os.path.join("DATA_NORMALIZADA", nombre_archivo[:-4] + "_normalizado.csv")  # Cambiamos la extensión a CSV
 
         # Procesar el archivo CSV de RG_01
@@ -121,7 +142,7 @@ def menu():
 
 def switch(case):
     if case == 1:
-        RPT_RA_11_NOTAS_FINALES_POR_PERIODO(archivos_csv)
+        RPT_RA_11_NOTAS_FINALES_POR_PERIODO(archivos_csv, directorio_entrada)
     elif case == 2:
         RPT_RG_04_EstudiantesInstitucion(archivo_xlsx)
     elif case == 3:
